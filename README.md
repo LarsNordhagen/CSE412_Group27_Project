@@ -30,6 +30,6 @@ Next, run data_generation.py to populate the database with the initial data.
     python3 data_generation.py
 
 ## Running
-Run app.py
+Run app.py from the 'src' folder
 
     python3 app.py
