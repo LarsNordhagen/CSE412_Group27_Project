@@ -35,32 +35,32 @@
         .result-item:last-child {
             border-bottom: none;
         }
+        button {
+            margin-bottom: 15px;
+            padding: 7px;
+            font-size: 1.3rem;
+            border: 2px solid black;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Search</h2>
-    <form method="POST" action="/">
-        <input type="text" name="keyword" class="search-box" placeholder="Enter a keyword to search..." required>
-        <br>
-        <button type="submit">Search</button>
-    </form>
+<h1>Crowdflow</h1>
+<h2>Hello, {{ email }}</h2>
 
-    <div class="results">
-        {% if search_results %}
-            <h3>Search Results:</h3>
-            {% if isArtistSearch %}
-                {% for result in search_results %}
-                    <div class="result-item">
-                        <strong>{{ result[1] }}</strong><br>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% else %}
-            <p>No results found</p>
-        {% endif %}
-    </div>
+<div class="container">
+    <button onclick="location.href='/events';">Create Event &rarr;</button>
+    <br>
+    <button onclick="location.href='/venues';">Manage Venues &rarr;</button>
+    <br>
+    <button onclick="location.href='/booking-create';">Create Booking &rarr;</button>
+    <br>
+    <button onclick="location.href='/my-bookings';">My Bookings &rarr;</button>
+    <br>
+    <br>
+    <br>
+    <button onclick="location.href='/logout';">Logout</button>
 </div>
 
 </body>
