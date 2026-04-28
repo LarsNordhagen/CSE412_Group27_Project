@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Bookings{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="page-head__eyebrow">crowdflow.bookings</div>
+  <h1 class="page-head__title">Bookings ledger</h1>
+  <p class="page-head__lede">
+    Every active and historical reservation. <strong>Pay</strong> confirms
+    via <code>INSERT&nbsp;payments</code> + <code>UPDATE&nbsp;bookings</code>;
+    <strong>Cancel</strong> issues an <code>UPDATE</code>;
+    <strong>Delete</strong> issues a <code>DELETE</code> (payment &amp; attendance cascade).
+  </p>
+</section>
+
+<section class="block">
+  <table class="data data--bookings" id="bookings-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>User</th>
+        <th>Event</th>
+        <th>Seats</th>
+        <th>Status</th>
+        <th>Payment</th>
+        <th class="num">Reserved</th>
+        <th class="actions">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in bookings %}
+        <tr data-booking-id="{{ b.booking_id }}" data-status="{{ b.status }}">
+          <td class="mono">{{ b.booking_id }}</td>
+          <td>{{ b.full_name }}</td>
+          <td>
+            <div class="cell-stack">
+              <span>{{ b.event_name }}</span>
+              <small class="muted">{{ b.venue_name }}</small>
+            </div>
+          </td>
+          <td class="mono">[{{ b.seat_ids | join(', ') }}]</td>
+          <td><span class="pill pill--{{ b.status }}">{{ b.status }}</span></td>
+          <td class="mono">
+            {% if b.amount %}
+              ${{ '%0.2f'|format(b.amount) }} · {{ b.payment_method }}
+            {% else %}
+              <span class="muted">-</span>
+            {% endif %}
+          </td>
+          <td class="num mono">{{ b.reserved_at.strftime('%m/%d %H:%M') }}</td>
+          <td class="actions">
+            {% if b.status == 'reserved' %}
+              <button class="btn btn--xs btn--primary" data-action="pay">Pay</button>
+              <button class="btn btn--xs btn--ghost"   data-action="cancel">Cancel</button>
+            {% elif b.status == 'confirmed' %}
+              <span class="muted small">paid</span>
+            {% elif b.status == 'cancelled' %}
+              <span class="muted small">cancelled</span>
+            {% endif %}
+            <button class="btn btn--xs btn--danger" data-action="delete">Delete</button>
+          </td>
+        </tr>
+      {% endfor %}
+      {% if not bookings %}
+        <tr><td colspan="8" class="muted center">No bookings yet - go reserve some seats.</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+</section>
+
+<!-- Pay modal -->
+<dialog id="pay-modal" class="modal">
+  <form method="dialog" id="pay-form" class="modal__form">
+    <h3>Record payment</h3>
+    <p class="muted small">
+      Booking <code id="pay-booking-id"></code>
+    </p>
+    <label class="field">
+      <span>Amount (USD)</span>
+      <input type="number" step="0.01" min="0.01" name="amount" required value="50.00">
+    </label>
+    <label class="field">
+      <span>Method</span>
+      <select name="payment_method" required>
+        <option value="credit">Credit</option>
+        <option value="debit">Debit</option>
+        <option value="cash">Cash</option>
+      </select>
+    </label>
+    <div class="modal__actions">
+      <button type="button" class="btn btn--ghost" data-close>Close</button>
+      <button type="submit" class="btn btn--primary">Confirm payment</button>
+    </div>
+  </form>
+</dialog>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/bookings.js') }}"></script>
+{% endblock %}

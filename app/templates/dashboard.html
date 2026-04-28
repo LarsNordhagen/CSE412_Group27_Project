@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero__eyebrow">Event Booking · Database Layer</div>
+  <h1 class="hero__title">
+    Live ledger of <em>events</em>, seats,<br>
+    bookings &amp; payments.
+  </h1>
+  <p class="hero__lede">
+    Every interaction below - selecting a seat, recording a payment,
+    cancelling a reservation - is a parameterized SQL query against
+    the <code>crowdflow</code> schema in PostgreSQL.
+  </p>
+</section>
+
+<section class="stats">
+  <div class="stat">
+    <div class="stat__num">{{ summary.total_events or 0 }}</div>
+    <div class="stat__label">Events</div>
+  </div>
+  <div class="stat">
+    <div class="stat__num">{{ summary.total_users or 0 }}</div>
+    <div class="stat__label">Users</div>
+  </div>
+  <div class="stat">
+    <div class="stat__num">{{ summary.confirmed_bookings or 0 }}</div>
+    <div class="stat__label">Confirmed bookings</div>
+  </div>
+  <div class="stat">
+    <div class="stat__num">${{ '%0.2f'|format(summary.total_revenue or 0) }}</div>
+    <div class="stat__label">Revenue</div>
+  </div>
+  <div class="stat">
+    <div class="stat__num">{{ summary.total_checkins or 0 }}</div>
+    <div class="stat__label">Check-ins</div>
+  </div>
+</section>
+
+<section class="block">
+  <header class="block__head">
+    <h2 class="block__title">Revenue by event</h2>
+    <span class="block__sub">SUM(payments.amount) GROUP BY event</span>
+  </header>
+
+  <table class="data">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Event</th>
+        <th class="num">Confirmed</th>
+        <th class="num">Revenue</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in revenue %}
+        <tr>
+          <td class="mono">{{ r.event_id }}</td>
+          <td>{{ r.event_name }}</td>
+          <td class="num mono">{{ r.confirmed_bookings }}</td>
+          <td class="num mono">${{ '%0.2f'|format(r.revenue or 0) }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="cta">
+  <a class="btn btn--primary" href="{{ url_for('crowdflow.events_page') }}">
+    Browse events &rarr;
+  </a>
+  <a class="btn btn--ghost" href="{{ url_for('crowdflow.bookings_page') }}">
+    Manage bookings
+  </a>
+</section>
+{% endblock %}

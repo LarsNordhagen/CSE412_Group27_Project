@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Not found{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero__eyebrow">404</div>
+  <h1 class="hero__title">No row for that key.</h1>
+  <p class="hero__lede">
+    The record you're looking for isn't in the database.
+    <a href="{{ url_for('crowdflow.home') }}">Back to dashboard &rarr;</a>
+  </p>
+</section>
+{% endblock %}

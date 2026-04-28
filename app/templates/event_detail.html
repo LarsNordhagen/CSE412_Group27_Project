@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}{{ event.event_name }}{% endblock %}
+
+{% block content %}
+<section class="detail-head">
+  <a href="{{ url_for('crowdflow.events_page') }}" class="back">&larr; All events</a>
+
+  <div class="detail-head__row">
+    <div>
+      <div class="page-head__eyebrow">Event № {{ '%02d'|format(event.event_id) }}</div>
+      <h1 class="page-head__title">{{ event.event_name }}</h1>
+      <dl class="inline-meta">
+        <dt>Date</dt>      <dd class="mono">{{ event.event_date.strftime('%A, %B %d, %Y · %H:%M') }}</dd>
+        <dt>Venue</dt>     <dd>{{ event.venue_name }}</dd>
+        <dt>Address</dt>   <dd>{{ event.address }}</dd>
+        <dt>Organizer</dt> <dd>{{ event.organizer_name }}</dd>
+        <dt>Status</dt>    <dd><span class="pill pill--{{ event.status }}">{{ event.status }}</span></dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <header class="block__head">
+    <h2 class="block__title">Reserve seats</h2>
+    <span class="block__sub">INSERT INTO crowdflow.bookings</span>
+  </header>
+
+  <form id="booking-form" class="booking-form" data-event-id="{{ event.event_id }}">
+    <fieldset class="seatmap">
+      <legend>Seat map · {{ event.venue_name }}</legend>
+
+      {% set sections = {} %}
+      {% for s in seats %}
+        {% if s.section not in sections %}
+          {% set _ = sections.update({s.section: []}) %}
+        {% endif %}
+        {% set _ = sections[s.section].append(s) %}
+      {% endfor %}
+
+      {% for section, rows in sections.items() %}
+        <div class="seatmap__section">
+          <div class="seatmap__section-name">{{ section }}</div>
+          <div class="seatmap__seats">
+            {% for s in rows %}
+              {% set is_taken = s.seat_id in taken %}
+              <label class="seat {% if is_taken %}seat--taken{% endif %}">
+                <input type="checkbox" name="seat_ids" value="{{ s.seat_id }}"
+                       {% if is_taken %}disabled{% endif %}>
+                <span class="seat__id">{{ s.seat_number }}</span>
+                <span class="seat__hint">{{ s.seat_id }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+
+      <div class="seatmap__legend">
+        <span><i class="dot dot--free"></i>Available</span>
+        <span><i class="dot dot--picked"></i>Selected</span>
+        <span><i class="dot dot--taken"></i>Taken</span>
+      </div>
+    </fieldset>
+
+    <fieldset class="picker">
+      <legend>Who's booking?</legend>
+      <label class="field">
+        <span>Attendee (users.user_id)</span>
+        <select name="user_id" required>
+          {% for u in users %}
+            <option value="{{ u.user_id }}">{{ u.full_name }} &middot; {{ u.email }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <div class="picker__summary">
+        <span class="picker__label">Selected seat IDs</span>
+        <code id="selected-readout" class="picker__readout">[ ]</code>
+      </div>
+
+      <button type="submit" class="btn btn--primary">
+        Reserve &nbsp;&rarr;
+      </button>
+    </fieldset>
+  </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/seatmap.js') }}"></script>
+{% endblock %}

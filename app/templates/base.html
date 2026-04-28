@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}CrowdFlow{% endblock %} - CrowdFlow</title>
+
+  <!-- Distinctive type pairing: Fraunces (display, oldstyle serif) + JetBrains Mono (data) + IBM Plex Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <header class="masthead">
+    <div class="masthead__inner">
+      <a class="brand" href="{{ url_for('crowdflow.home') }}">
+        <span class="brand__mark">▢</span>
+        <span class="brand__name">Crowd<em>Flow</em></span>
+      </a>
+      <nav class="nav">
+        <a href="{{ url_for('crowdflow.home') }}">Dashboard</a>
+        <a href="{{ url_for('crowdflow.events_page') }}">Events</a>
+        <a href="{{ url_for('crowdflow.bookings_page') }}">Bookings</a>
+      </nav>
+      <div class="meta">
+        <span class="meta__label">CSE 412 · Group 27 · Spring 2026</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="footer__rule"></div>
+    <p>
+      <span class="footer__brand">CrowdFlow</span>
+      &nbsp;·&nbsp; PostgreSQL + Flask + psycopg2
+      &nbsp;·&nbsp; Lars Nordhagen, Megan Tricia Ng, Satya Neriyanuru, Vanshika Parihar
+    </p>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

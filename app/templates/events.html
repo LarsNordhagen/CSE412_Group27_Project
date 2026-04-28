@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Events{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="page-head__eyebrow">crowdflow.events</div>
+  <h1 class="page-head__title">All events</h1>
+  <p class="page-head__lede">
+    {{ events|length }} rows · joined with <code>venues</code> and <code>users</code>
+    (organizer) · ordered by <code>event_date</code>.
+  </p>
+</section>
+
+<div class="grid">
+  {% for e in events %}
+    <a class="card" href="{{ url_for('crowdflow.event_detail', event_id=e.event_id) }}">
+      <div class="card__head">
+        <span class="card__num">№{{ '%02d'|format(e.event_id) }}</span>
+        <span class="pill pill--{{ e.status }}">{{ e.status }}</span>
+      </div>
+      <h3 class="card__title">{{ e.event_name }}</h3>
+      <dl class="card__meta">
+        <dt>Date</dt>
+        <dd class="mono">{{ e.event_date.strftime('%b %d, %Y · %H:%M') }}</dd>
+        <dt>Venue</dt>
+        <dd>{{ e.venue_name }}</dd>
+        <dt>Organizer</dt>
+        <dd>{{ e.organizer_name }}</dd>
+        <dt>Active bookings</dt>
+        <dd class="mono">{{ e.active_bookings }}</dd>
+      </dl>
+      <span class="card__cta">Open seat map &rarr;</span>
+    </a>
+  {% endfor %}
+</div>
+{% endblock %}
